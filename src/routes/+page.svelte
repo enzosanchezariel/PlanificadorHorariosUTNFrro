@@ -13,9 +13,10 @@
 
 <div class="container">
     <h1>Planificador de horarios UTN Frro</h1>
-    
+
     <input type="number" bind:value={selected} />
 
+    <h2>Primer cuatrimestre</h2>
     <table>
         <thead>
             <tr>
@@ -34,6 +35,31 @@
                     <td>{timeFrame}</td>
                     {#each Array(6).fill(0) as _, i}
                         <td style:background-color={(index * 6) + i + 1 === selected ? "red" : ""}>{(index * 6) + i + 1}</td>
+                    {/each}
+                </tr>
+            {/each}
+        </tbody>
+    </table>
+
+    <h2>Segundo cuatrimestre</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Horario</th>
+                <th>Lunes</th>
+                <th>Martes</th>
+                <th>Miércoles</th>
+                <th>Jueves</th>
+                <th>Viernes</th>
+                <th>Sábado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each timeFrames as timeFrame, index}
+                <tr>
+                    <td>{timeFrame}</td>
+                    {#each Array(6).fill(0) as _, i}
+                        <td style:background-color={ (timeFrames.length * 6 + index * 6) + i + 1 === selected ? "red" : ""}>{(timeFrames.length * 6 + index * 6) + i + 1}</td>
                     {/each}
                 </tr>
             {/each}
