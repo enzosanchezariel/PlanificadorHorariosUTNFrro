@@ -1,7 +1,10 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     import { HourByCommission } from "$lib/entities/hourByCommission.entity";
     import { Subject } from "$lib/entities/subject.entity";
+    import { addedSubjects } from "$lib/shared.svelte";
     import jsonData from "$lib/subjects.json";
+    import { onMount } from "svelte";
 
     const timeFrames: string[] = [
         "7:15 a 8:00", "8:00 a 8:45", "8:45 a 9:30", "9:45 a 10:30", "10:30 a 11:15",
@@ -11,15 +14,21 @@
         "23:25 a 0:10"
     ];
 
-    const subjects: Subject[] = jsonData.map((subject: any) => {
-        return new Subject(
-            subject.carreer,
-            subject.elective,
-            subject.name,
-            subject.level,
-            subject.period,
-            subject.hourByCommissions.map((hourByCommission: any) => new HourByCommission(hourByCommission.commission, hourByCommission.hours))
-        );
+    let subjects: Subject[] = $state<Subject[]>([]);
+
+    onMount(() => {
+        subjects = jsonData.map((subject: any) => {
+            return new Subject(
+                subject.carreer,
+                subject.elective,
+                subject.name,
+                subject.level,
+                subject.period,
+                subject.hourByCommissions.map((hourByCommission: any) => new HourByCommission(hourByCommission.commission, hourByCommission.hours))
+            );
+        });
+        subjects = [...subjects, ...addedSubjects.subjects];
+        console.log(JSON.stringify(subjects));
     });
 
     let selectedSubjects: {subject: number, commission: number}[] = $state([]);
@@ -65,14 +74,6 @@
         temporalCheckedIndex = null;
     }
 
-    $effect(() => {
-            //$inspect(temporalSelectedSubject);
-            $inspect(temporalCheckedIndex);
-            $inspect(selectedSubjects);
-        }
-    );
-
-
     function findSlotSubjects(index: number) {
         const foundSubjects = selectedSubjects.filter((subject) => {
             const foundSubject = subjects[subject.subject];
@@ -99,7 +100,6 @@
     }
 
     .cell {
-        gap: 5px;
         padding: 5px;
     }
 
@@ -158,6 +158,7 @@
                 </div>
             </footer>
         </article>
+        <p>¿No encuantra la materia en la lista? <a href={base + "/add-subject"}>Cargue la materia manualmente</a></p>
         {#if selectedSubjects.length !== 0}
             <article>
                 <strong>Resumen</strong>
@@ -181,17 +182,20 @@
             <footer>
                 <form onsubmit={handleSubmit}>
                     <input type="hidden" name="subject" value={temporalSelectedSubject}>
-                    {#each subjects[temporalSelectedSubject].hourByCommissions as commission}
-                        <label for={commission.commission.toString()}>
-                            <input type="radio" id={commission.commission.toString()} name="commission" value={commission.commission.toString()} bind:group={temporalCheckedIndex}/>
-                            {subjects[temporalSelectedSubject].level.toString() + (subjects[temporalSelectedSubject].elective === true ? "E" : "") + getAlias(subjects[temporalSelectedSubject].carreer) + commission.commission.toString()}
-                        </label>
-                    {/each}
+                    <fieldset>
+                        <legend>Comisión</legend>
+                        {#each subjects[temporalSelectedSubject].hourByCommissions as commission}
+                            <label for={commission.commission.toString()}>
+                                <input type="radio" id={commission.commission.toString()} name="commission" value={commission.commission.toString()} bind:group={temporalCheckedIndex}/>
+                                {subjects[temporalSelectedSubject].level.toString() + (subjects[temporalSelectedSubject].elective === true ? "E" : "") + getAlias(subjects[temporalSelectedSubject].carreer) + commission.commission.toString()}
+                            </label>
+                        {/each}
                         <label for="none">
                             <input type="radio" id="none" name="commission" value="null" bind:group={temporalCheckedIndex}/>
                             Ninguno
                         </label>
-                    <hr>
+                    </fieldset>
+
                     <button type="submit">Aceptar</button>
                 </form>
             </footer>
@@ -253,7 +257,7 @@
                     {/each}
                 </td>
             {:else}
-                <td><p>-</p></td>
+                <td class="cell"><p>-</p></td>
             {/if}
         {/each}
     </tr>
