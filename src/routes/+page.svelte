@@ -145,7 +145,7 @@
 </style>
 
 <div class="container">
-    <h1>Planificador de horarios UTN Frro</h1>
+    <h1>Planificador de horarios UTN Frro 2025</h1>
 
     {#if temporalSelectedSubject === null}
         <article>
@@ -153,7 +153,7 @@
             <footer>
                 <div class="list-group">
                     {#each subjects as subject, index}
-                        <button type="button" class="subject-button" onclick={() => {selectSubject(index)}}>{subject.carreer + " | " + subject.level + "° | " + (subject.elective ? "ELECTIVA | " : "") + subject.name}</button>
+                        <button type="button" class="subject-button" onclick={() => {selectSubject(index)}}>{subject.carreer + " | " + subject.level + "° | "  + subject.period +" | " + (subject.elective ? "ELECTIVA | " : "") + subject.name}</button>
                     {/each}
                 </div>
             </footer>

@@ -509,6 +509,89 @@
     },
     {
         "carreer":"ISI",
+        "elective":true,
+        "name":"Introducción a la Práctica Profesional",
+        "level":3,
+        "period":"ANUAL",
+        "hourByCommissions":[
+            {
+                "commission":1,
+                "hours":[
+                    1,
+                    7,
+                    13,
+                    19,
+                    127,
+                    133,
+                    139,
+                    145
+                ]
+            },
+            {
+                "commission":3,
+                "hours":[
+                    93,
+                    99,
+                    105,
+                    111,
+                    219,
+                    225,
+                    231,
+                    237
+                ]
+            }
+        ]
+    },
+    {
+        "carreer":"ISI",
+        "elective":true,
+        "name":"Tecnologias de Desarrollo de Soft. IDE",
+        "level":3,
+        "period":"ANUAL",
+        "hourByCommissions":[
+            {
+                "commission":1,
+                "hours":[
+                    25,
+                    31,
+                    37,
+                    43,
+                    151,
+                    157,
+                    163,
+                    169
+                ]
+            },
+            {
+                "commission":2,
+                "hours":[
+                    61,
+                    67,
+                    73,
+                    79,
+                    187,
+                    193,
+                    199,
+                    205
+                ]
+            },
+            {
+                "commission":3,
+                "hours":[
+                    85,
+                    91,
+                    97,
+                    103,
+                    211,
+                    217,
+                    223,
+                    229
+                ]
+            }
+        ]
+    },
+    {
+        "carreer":"ISI",
         "elective":false,
         "name":"Legislación",
         "level":4,
