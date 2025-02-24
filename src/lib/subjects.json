@@ -1,0 +1,36 @@
+[
+    {
+        "carreer": "ISI",
+        "elective": false,
+        "name": "Database Systems",
+        "level": 3,
+        "period": "1CUATR",
+        "hourByCommissions": [
+            {
+                "commission": 1,
+                "hours": [8, 10, 12, 200]
+            },
+            {
+                "commission": 2,
+                "hours": [14, 16, 18]
+            }
+        ]
+    },
+    {
+        "carreer": "ISI",
+        "elective": true,
+        "name": "Artificial Intelligence",
+        "level": 4,
+        "period": "ANUAL",
+        "hourByCommissions": [
+            {
+                "commission": 1,
+                "hours": [10, 12, 14, 200, 201]
+            },
+            {
+                "commission": 2,
+                "hours": [16, 18, 20]
+            }
+        ]
+    }
+]
