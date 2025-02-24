@@ -153,12 +153,12 @@
             <footer>
                 <div class="list-group">
                     {#each subjects as subject, index}
-                        <button type="button" class="subject-button" onclick={() => {selectSubject(index)}}>{subject.name}</button>
+                        <button type="button" class="subject-button" onclick={() => {selectSubject(index)}}>{subject.carreer + " | " + subject.level + "° | " + (subject.elective ? "ELECTIVA | " : "") + subject.name}</button>
                     {/each}
                 </div>
             </footer>
         </article>
-        <p>¿No encuantra la materia en la lista? <a href={base + "/add-subject"}>Cargue la materia manualmente</a></p>
+        <p>¿No encuantra la materia en la lista? <a href={base + "/add-subject"}>Cargue la materia manualmente.</a> (Tu calendario actual se perderá)</p>
         {#if selectedSubjects.length !== 0}
             <article>
                 <strong>Resumen</strong>
