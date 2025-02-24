@@ -76,8 +76,8 @@
     function findSlotSubjects(index: number) {
         const foundSubjects = selectedSubjects.filter((subject) => {
             const foundSubject = subjects[subject.subject];
-            const foundCommission = foundSubject.hourByCommissions[subject.commission];
-            return foundCommission.hours.includes(index)
+            const foundCommission = foundSubject.hourByCommissions.find((commission) => commission.commission === subject.commission);
+            return foundCommission && foundCommission.hours.includes(index)
         });
         return foundSubjects;
     }
@@ -98,28 +98,49 @@
         border-bottom: var(--pico-border-width) solid var(--pico-table-border-color);
     }
 
-    .icon-button {
-        display: flex;
-        padding: 0;
-        padding-right: 10px;
-        margin: 0;
-        align-items: center;
-        align-content: center;
-        background-color: transparent;
-        border: none;
-        border-radius: 0;
-        border-right: var(--pico-border-width) solid var(--pico-table-border-color);
-        color: inherit;
+    .cell {
         gap: 5px;
+        padding: 5px;
     }
 
-    .sbs {
+    .cell p {
+        padding: 5px;
+        margin: 0;
+        color: white;
+    }
+
+    .cell p:not(:only-child):not(:last-child) {
+        border-bottom: var(--pico-border-width) solid #FFFFFF3F;
+    }
+
+    .list-group {
+        overflow-y: scroll;
+        max-height: 30rem;
+    }
+
+    .summary-selection {
         display: flex;
         flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal);
     }
 
-    .radio-option {
-        padding: 0.5rem;
+    .summary-selection:not(:last-child) {
+        border-bottom: var(--pico-border-width) solid var(--pico-table-border-color);
+    }
+
+    .summary-selection p {
+        margin: 0;
+    }
+
+    .summary-selection button {
+        border: none;
+        padding: 5px;
+        margin: 0;
+        background-color: var(--pico-color-red-500);
+        display: flex;
+        align-items: center;
     }
 </style>
 
@@ -128,48 +149,48 @@
 
     {#if temporalSelectedSubject === null}
         <article>
-            <strong>Seleccione las materias que desea cursar</strong>
+            <strong>Seleccione la materia que desea cursar</strong>
             <footer>
-                {#each subjects as subject, index}
-                    <button type="button" class="subject-button" onclick={() => {selectSubject(index)}}>{subject.name}</button>
-                {/each}
+                <div class="list-group">
+                    {#each subjects as subject, index}
+                        <button type="button" class="subject-button" onclick={() => {selectSubject(index)}}>{subject.name}</button>
+                    {/each}
+                </div>
             </footer>
         </article>
+        {#if selectedSubjects.length !== 0}
+            <article>
+                <strong>Resumen</strong>
+                <footer>
+                    <div class="summary-group">
+                        {#each selectedSubjects as selectedSubject}
+                            <div class="summary-selection">
+                                <p>{subjects[selectedSubject.subject].name + " " + subjects[selectedSubject.subject].level.toString() + (subjects[selectedSubject.subject].elective === true ? "E" : "") + getAlias(subjects[selectedSubject.subject].carreer) + selectedSubject.commission.toString()}</p>
+                                <button type="button" onclick={() => {addSubject(selectedSubject.subject, null)}} aria-label="Eliminar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
+                                </button>
+                            </div>
+                        {/each}
+                    </div>
+                </footer>
+            </article>
+        {/if}
     {:else}
         <article>
-            <div class="sbs" style:gap="10px">
-                <button class="icon-button" onclick={() => {temporalSelectedSubject = null; temporalCheckedIndex = null}} aria-label="Volver a lista de materias">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round">
-                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                        <path d="M5 12l14 0" />
-                        <path d="M5 12l6 6" />
-                        <path d="M5 12l6 -6" />
-                    </svg>
-                    Volver
-                </button>
-                <strong>Seleccione la comision que desea cursar de {subjects[temporalSelectedSubject].name}</strong>
-            </div>
+            <strong>Seleccione la comision que desea cursar de {subjects[temporalSelectedSubject].name}</strong>
             <footer>
                 <form onsubmit={handleSubmit}>
                     <input type="hidden" name="subject" value={temporalSelectedSubject}>
-                    {#each subjects[temporalSelectedSubject].hourByCommissions as commission, index}
-                        <div class="radio-option">
-                            <input type="radio" id={index.toString()} name="commission" value={index.toString()} bind:group={temporalCheckedIndex}/>
-                            <label for={index.toString()}>{subjects[temporalSelectedSubject].level.toString() + (subjects[temporalSelectedSubject].elective === true ? "E" : "") + getAlias(subjects[temporalSelectedSubject].carreer) + commission.commission.toString()}</label>
-                        </div>    
+                    {#each subjects[temporalSelectedSubject].hourByCommissions as commission}
+                        <label for={commission.commission.toString()}>
+                            <input type="radio" id={commission.commission.toString()} name="commission" value={commission.commission.toString()} bind:group={temporalCheckedIndex}/>
+                            {subjects[temporalSelectedSubject].level.toString() + (subjects[temporalSelectedSubject].elective === true ? "E" : "") + getAlias(subjects[temporalSelectedSubject].carreer) + commission.commission.toString()}
+                        </label>
                     {/each}
-                    <div class="radio-option">
-                        <input type="radio" id="none" name="commission" value="null" bind:group={temporalCheckedIndex}/>
-                        <label for="none">Ninguno</label>
-                    </div>
+                        <label for="none">
+                            <input type="radio" id="none" name="commission" value="null" bind:group={temporalCheckedIndex}/>
+                            Ninguno
+                        </label>
                     <hr>
                     <button type="submit">Aceptar</button>
                 </form>
@@ -178,70 +199,63 @@
     {/if}
 
     <h2>Primer cuatrimestre</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Horario</th>
-                <th>Lunes</th>
-                <th>Martes</th>
-                <th>Miércoles</th>
-                <th>Jueves</th>
-                <th>Viernes</th>
-                <th>Sábado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#each timeFrames as timeFrame, index}
+
+    <div class="overflow-auto">
+        <table>
+            <thead>
                 <tr>
-                    <td>{timeFrame}</td>
-                    {#each Array(6).fill(0) as _, i}
-                        <!-- <td style:background-color={(index * 6) + i + 1 === selected ? "red" : ""}>{(index * 6) + i + 1}</td> -->
-                        {#if findSlotSubjects((index * 6) + i + 1).length !== 0}
-                            <td style:background-color={findSlotSubjects((index * 6) + i + 1).length === 1 ? "green" : "red"}>
-                                {#each findSlotSubjects((index * 6) + i + 1) as foundMatch}
-                                    <p>{subjects[foundMatch?.subject ?? 0].name}</p>
-                                {/each}
-                            </td>
-                        {:else}
-                            <td><p>-</p></td>
-                        {/if}
-                    {/each}
+                    <th>Horario</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th>Sábado</th>
                 </tr>
-            {/each}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {@render cells()}
+            </tbody>
+        </table>
+    </div>
 
     <h2>Segundo cuatrimestre</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Horario</th>
-                <th>Lunes</th>
-                <th>Martes</th>
-                <th>Miércoles</th>
-                <th>Jueves</th>
-                <th>Viernes</th>
-                <th>Sábado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {#each timeFrames as timeFrame, index}
+
+    <div class="overflow-auto">
+        <table>
+            <thead>
                 <tr>
-                    <td>{timeFrame}</td>
-                    {#each Array(6).fill(0) as _, i}
-                        <!-- <td style:background-color={(timeFrames.length * 6 + index * 6) + i + 1 === selected ? "red" : ""}>{(timeFrames.length * 6 + index * 6) + i + 1}</td> -->
-                        {#if findSlotSubjects((timeFrames.length * 6 + index * 6) + i + 1).length !== 0}
-                            <td style:background-color={findSlotSubjects((timeFrames.length * 6 + index * 6) + i + 1).length === 1 ? "green" : "red"}>
-                                {#each findSlotSubjects((timeFrames.length * 6 + index * 6) + i + 1) as foundMatch}
-                                    <p>{subjects[foundMatch?.subject ?? 0].name}</p>
-                                {/each}
-                            </td>
-                        {:else}
-                            <td>-</td>
-                        {/if}
-                    {/each}
+                    <th>Horario</th>
+                    <th>Lunes</th>
+                    <th>Martes</th>
+                    <th>Miércoles</th>
+                    <th>Jueves</th>
+                    <th>Viernes</th>
+                    <th>Sábado</th>
                 </tr>
-            {/each}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {@render cells(1)}
+            </tbody>
+        </table>
+    </div>
 </div>
+
+{#snippet cells(timesRepeated = 0)}
+    {#each timeFrames as timeFrame, index}
+    <tr>
+        <td>{timeFrame}</td>
+        {#each Array(6).fill(0) as _, i}
+            {#if findSlotSubjects((timeFrames.length * 6 * timesRepeated + index * 6) + i + 1).length !== 0}
+                <td style:background-color={findSlotSubjects((timeFrames.length * 6 * timesRepeated + index * 6) + i + 1).length === 1 ? "var(--pico-color-green-500)" : "var(--pico-color-red-500)"} class="cell">
+                    {#each findSlotSubjects((timeFrames.length * 6 * timesRepeated + index * 6) + i + 1) as foundMatch}
+                        <p>{subjects[foundMatch?.subject ?? 0].name}</p>
+                    {/each}
+                </td>
+            {:else}
+                <td><p>-</p></td>
+            {/if}
+        {/each}
+    </tr>
+    {/each}
+{/snippet}
