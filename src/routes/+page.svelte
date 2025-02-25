@@ -132,6 +132,15 @@
 
     .summary-selection p {
         margin: 0;
+        width: 100%;
+    }
+
+    .summary-selection a {
+        color: inherit;
+        text-decoration: none;
+        width: 100%;
+        display: block;
+        cursor: pointer;
     }
 
     .summary-selection button {
@@ -166,7 +175,7 @@
                     <div class="summary-group">
                         {#each selectedSubjects as selectedSubject}
                             <div class="summary-selection">
-                                <p>{subjects[selectedSubject.subject].name + " " + subjects[selectedSubject.subject].level.toString() + (subjects[selectedSubject.subject].elective === true ? "E" : "") + getAlias(subjects[selectedSubject.subject].carreer) + selectedSubject.commission.toString()}</p>
+                                <p><a onclick={() => {selectSubject(selectedSubject.subject)}}>{subjects[selectedSubject.subject].name + " " + subjects[selectedSubject.subject].level.toString() + (subjects[selectedSubject.subject].elective === true ? "E" : "") + getAlias(subjects[selectedSubject.subject].carreer) + selectedSubject.commission.toString()}</a></p>
                                 <button type="button" onclick={() => {addSubject(selectedSubject.subject, null)}} aria-label="Eliminar">
                                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
                                 </button>

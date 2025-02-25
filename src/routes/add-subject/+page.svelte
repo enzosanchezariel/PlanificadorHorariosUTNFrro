@@ -103,8 +103,6 @@
             </form>
         </footer>
     </article>
-    
-    <p>{selectedHours}</p>
 
     <h1>Horarios por comisión</h1>
 
