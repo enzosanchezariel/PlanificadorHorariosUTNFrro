@@ -1,5 +1,6 @@
 <script lang="ts">
     import { base } from "$app/paths";
+    import { findValidCommissionCombinations } from "$lib/combinationLogic";
     import { HourByCommission } from "$lib/entities/hourByCommission.entity";
     import { Subject } from "$lib/entities/subject.entity";
     import { addedSubjects } from "$lib/shared.svelte";
@@ -55,6 +56,11 @@
     }
 
     function addSubject(subjectIndex: number | null, commissionIndex: number | null) {
+
+        calculatedCombinations = [];
+        showingCombinations = false;
+        currentCombinationIdx = 0;
+
         if (subjectIndex === null) {
             return;
         }
@@ -81,6 +87,22 @@
             return foundCommission && foundCommission.hours.includes(index)
         });
         return foundSubjects;
+    }
+
+    let calculatedCombinations: any[];
+    let showingCombinations = $state(false);
+    let currentCombinationIdx = $state(0);
+
+    function calculateCombinations() {
+        currentCombinationIdx = 0;
+        const selectedSubjectsIndexes = selectedSubjects.map((selectedSubject) => selectedSubject.subject);
+        calculatedCombinations = findValidCommissionCombinations(selectedSubjectsIndexes, jsonData);
+        if (calculatedCombinations.length !== 0) {
+            selectedSubjects = calculatedCombinations[0];
+            showingCombinations = true;
+        } else {
+            alert("No se encontraron combinaciones validas");
+        }
     }
 </script>
 
@@ -151,6 +173,26 @@
         display: flex;
         align-items: center;
     }
+
+    .combination-navigation {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .combination-navigation p {
+        margin: 0;
+    }
+
+    .combination-navigation button {
+        margin: 0;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+    }
 </style>
 
 <div class="container">
@@ -209,6 +251,44 @@
                 </form>
             </footer>
         </article>
+    {/if}
+
+    {#if !showingCombinations && selectedSubjects.length !== 0}
+        <p>¿Desearía <a onclick={calculateCombinations} style:cursor="pointer">ver todas las combinaciones posibles con las materias seleccionadas</a>?</p>
+    {:else if showingCombinations}
+        <div class="combination-navigation">
+            <button aria-label="Combinación anterior" onclick={() => {
+                if (currentCombinationIdx === 0) {
+                    currentCombinationIdx = calculatedCombinations.length - 1;
+                } else {
+                    currentCombinationIdx -= 1;
+                }
+                selectedSubjects = calculatedCombinations[currentCombinationIdx];
+            }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M5 12l14 0" />
+                    <path d="M5 12l6 6" />
+                    <path d="M5 12l6 -6" />
+                </svg>
+            </button>
+            <p>Combinación {currentCombinationIdx}/{calculatedCombinations.length - 1}</p>
+            <button aria-label="Combinación posterior" onclick={() => {
+                if (currentCombinationIdx === calculatedCombinations.length - 1) {
+                    currentCombinationIdx = 0;
+                } else {
+                    currentCombinationIdx += 1;
+                }
+                selectedSubjects = calculatedCombinations[currentCombinationIdx];
+            }}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                    <path d="M5 12l14 0" />
+                    <path d="M13 18l6 -6" />
+                    <path d="M13 6l6 6" />
+                </svg>
+            </button>
+        </div>
     {/if}
 
     <h2>Primer cuatrimestre</h2>
